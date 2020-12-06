@@ -19,6 +19,7 @@ async function list(req, res, next) {
     .sort({title: 'asc'}).limit(50).exec();
     res.send(articles);
   } catch (err) {
+    console.error(err.name + ': ' + err.message);
     res.status(500).send(err.message);
   }
 };
@@ -26,14 +27,13 @@ async function list(req, res, next) {
 // GET /api/articles/:id
 async function detail(req, res, next) {
   try {
-    console.log(44, req.params.id);
     const article = await Article.findById(req.params.id).exec();
     if (article == null) { 
       return res.status(404).send("Article Not Found");
     }
     res.send(article);    
   } catch (err) {
-    console.log('Error querying article', JSON.stringify(err));
+    console.error(err.name + ': ' + err.message);
     res.status(500).send(err.message);
   }
 }
@@ -43,15 +43,15 @@ async function create(req, res, next) {
   // Check request's validation result. Wrap errors in an object.
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).send(errors);
+    return res.status(422).send(errors);
   }
   try {
     // Limit which fields can be entered.
     const formData = { title, content, published } = req.body;
     const article = await Article.create(formData);
-    res.send(article);
+    res.status(201).send(article);
   } catch (err) {
-    console.log('Error creating a article', JSON.stringify(err));
+    console.error(err.name + ': ' + err.message);
     res.status(500).send(err.message);
   }
 }
@@ -66,7 +66,7 @@ async function updateForm(req, res, next) {
     }
     res.send(article); 
   } catch (err) {
-    console.log('Error finding article', JSON.stringify(err))
+    console.error(err.name + ': ' + err.message);
     res.status(500).send(err.message);
   }
 }
@@ -75,7 +75,7 @@ async function updateForm(req, res, next) {
 async function update(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).send(errors);
+    return res.status(422).send(errors);
   }
   try {
     // list the specific fields to update for security. 
@@ -84,7 +84,7 @@ async function update(req, res, next) {
     const updatedArticle = await Article.findByIdAndUpdate(req.params.id, formData, {new: true});
     res.send(updatedArticle);
   } catch (err) {
-    console.log('Error updating article', JSON.stringify(err));
+    console.error(err.name + ': ' + err.message);
     res.status(500).send(err.message); 
   }
 }
@@ -98,7 +98,7 @@ async function destroy(req, res, next) {
     } 
     res.status(204);
   } catch (err) {
-    console.log('Error deleting article', JSON.stringify(err));
+    console.error(err.name + ': ' + err.message);
     res.status(500).send(err.message);
   }
 }

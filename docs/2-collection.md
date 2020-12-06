@@ -113,6 +113,27 @@ touch views/articles/create.ejs
 touch views/articles/update.ejs
 touch views/articles/delete.ejs
 ```
+
+### Add form-errors partial
+* Add a partial HTML template to display create and update form errors  
+`touch views/layouts/form-errors.ejs`
+#### `views/layouts/form-errors.ejs`
+``` html
+<% if (typeof errors !== 'undefined') { %>
+  <ul class='list-group mt-1'>
+    <li class='list-group-item list-group-item-danger py-1'>
+      <strong>Correct Any Errors Below And Resubmit:</strong>
+    </li>
+    <% for (const error of errors) { %>
+      <li class='list-group-item text-danger border-danger py-1'>
+        <%= error.msg %>
+      </li>
+    <% } %>
+  </ul>
+<% } %>
+```
+* The create and update form templates import the partial. 
+
 ---
 ## 3&4.1) List Controller Function and View
 ### Route
@@ -287,9 +308,9 @@ async function update(req, res, next) {
     // list the specific fields to update for security. 
     // If all fields can be updated: const formData = req.body;
     const formData = { title, content, published } = req.body;
-    const updatedArticle = await Article.findByIdAndUpdate(req.params.id, formData, {new: true});
+    await Article.findByIdAndUpdate(req.params.id, formData, {new: true});
     req.flash('success', 'Article has been updated.');
-    res.redirect(`/articles/${updatedArticle.id}`);    
+    res.redirect(`/articles/${req.params.id}`);    
   } catch (err) {
     next(err);
   }

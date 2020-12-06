@@ -1,0 +1,73 @@
+Markdown all in one extension
+https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one
+Add TOC to a file: 
+  Rt click > Command Palette > enter "Create Table of Contents"
+
+<!-- omit in toc -->
+
+Filenames: #### `path/filename`
+&emsp;**`models/user.js`**
+
+
+---
+npm install crypto-random-string @sendgrid/mail
+
+--- 
+Run app in Debug mode???
+DEBUG=node-mongo-baseapp:* nodemon
+
+---
+Log errors:
+console.error(err.name + ': ' + err.message);
+console.log('Error querying article', JSON.stringify(err));
+
+---
+JWT: Joey/Admin
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWQ3MDEyYTk0MDdiOGQ2ZDZmM2UxZjBmIiwidXNlcm5hbWUiOiJKb2V5IFJhbW9uZSIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2MDcwMjMzODEsImV4cCI6MTYzODU4MDk4MX0.y08iNZDzg0jLuizA9aslqisMW-Dgw0Gz48lNozXTuyA
+
+JWT: Johnny/Standard role
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWQ2NzEyNTVhODRiNTA0MmM1Yjg1ZTMyIiwidXNlcm5hbWUiOiJKb2hubnkifSwiaWF0IjoxNjA3MDM1NzQyLCJleHAiOjE2Mzg1OTMzNDJ9.FYr4wHnk99VGYTzyjEowZnKLuW2fhG-ltc7hVlxX1Js
+
+---
+Curl 
+curl http://localhost:3000/api/articles
+curl --cookie "jwt=Yo" http://localhost:3000/api/users/testaccess
+Joey:
+curl --cookie "jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWQ3MDEyYTk0MDdiOGQ2ZDZmM2UxZjBmIiwidXNlcm5hbWUiOiJKb2V5IFJhbW9uZSIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2MDcwMjMzODEsImV4cCI6MTYzODU4MDk4MX0.y08iNZDzg0jLuizA9aslqisMW-Dgw0Gz48lNozXTuyA" http://localhost:3000/api/users/testaccess
+Johnny: 
+curl --cookie "jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWQ2NzEyNTVhODRiNTA0MmM1Yjg1ZTMyIiwidXNlcm5hbWUiOiJKb2hubnkifSwiaWF0IjoxNjA3MDM1NzQyLCJleHAiOjE2Mzg1OTMzNDJ9.FYr4wHnk99VGYTzyjEowZnKLuW2fhG-ltc7hVlxX1Js" http://localhost:3000/api/users/testaccess
+
+curl http://localhost:3000/api/users/testaccess \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWQ3MDEyYTk0MDdiOGQ2ZDZmM2UxZjBmIiwidXNlcm5hbWUiOiJKb2V5IFJhbW9uZSIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2MDcwMjMzODEsImV4cCI6MTYzODU4MDk4MX0.y08iNZDzg0jLuizA9aslqisMW-Dgw0Gz48lNozXTuyA"
+//  -H "Authorization: Bearer {token}"
+curl http://localhost:3000/api/users/testaccess \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWQ3MDEyYTk0MDdiOGQ2ZDZmM2UxZjBmIiwidXNlcm5hbWUiOiJKb2V5IFJhbW9uZSIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2MDcwMjMzODEsImV4cCI6MTYzODU4MDk4MX0.y08iNZDzg0jLuizA9aslqisMW-Dgw0Gz48lNozXTuyA"
+
+Login: curl -H "Content-Type: application/json" -X POST -d '{"email":"joey@ramones.com","password":"ramones"}' http://localhost:3000/api/auth/login
+
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"email":"joey@ramones.com","password":"ramones"}' \
+  http://localhost:3000/api/auth/login
+---
+exports.isAdmin = async (req, res, next) => {
+  try {
+    const decoded = jwt.verify(req.cookies.jwt, process.env.SECRET);
+    console.log(88, decoded);
+    const currentUser = await User.findById(decoded.user.id);
+    console.log(99, currentUser);
+    if ((!currentUser.role) || currentUser.role !== 'admin') {
+      throw (new Error('Unauthorized'));
+      // throw (new Error({NoAccessError: 'You do not have permission'}));
+    }
+    next();
+  } catch (err) {
+    console.log(err.name + ': ' + err.message);
+    if (err.name === 'JsonWebTokenError') {
+      res.status(401).send('login');
+    } else {
+      res.status(403).send('Unauthorized');
+    }
+  }
+}

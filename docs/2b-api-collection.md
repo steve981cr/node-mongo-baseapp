@@ -14,6 +14,7 @@ app.use('/api/articles', apiArticlesRouter);
 ---
 ## RESTful Routes
 * Depending on your API client you may not need routes for the forms. The client side may contain the code for the forms and may store the data for update and delete forms from the list or detail pages.
+* HTML forms can only send GET and POST requests but clients like React or SmartPhone apps can send GET, POST, PUT and DELETE requests.
 
 ``` js
 const express = require('express');
@@ -97,7 +98,7 @@ async function create(req, res, next) {
     // Limit which fields can be entered.
     const formData = { title, content, published } = req.body;
     const article = await Article.create(formData);
-    res.send(article);
+    res.status(201).send(article);
   } catch (err) {
     console.log('Error creating a article', JSON.stringify(err));
     res.status(500).send(err.message);

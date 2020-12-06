@@ -3,11 +3,12 @@ const router = express.Router()
 const Article = require('../models/article');
 const createError = require('http-errors');
 const { body, validationResult } = require('express-validator');
+const auth = require('./authMiddleware');
 
 // Articles routes
 router.get('/', list);
-router.get('/create', createForm);
-router.post('/create', validateForm(), create);
+router.get('/create', auth.isLoggedIn, createForm);
+router.post('/create', auth.isLoggedIn, validateForm(), create);
 router.get('/:id', detail);
 router.get('/:id/update', updateForm);
 router.post('/:id/update', validateForm(), update);
@@ -86,9 +87,9 @@ async function update(req, res, next) {
     // list the specific fields to update for security. 
     // If all fields can be updated: const formData = req.body;
     const formData = { title, content, published } = req.body;
-    const updatedArticle = await Article.findByIdAndUpdate(req.params.id, formData, {new: true});
+    await Article.findByIdAndUpdate(req.params.id, formData, {new: true});
     req.flash('success', 'Article has been updated.');
-    res.redirect(`/articles/${updatedArticle.id}`);    
+    res.redirect(`/articles/${req.params.id}`);    
   } catch (err) {
     next(err);
   }
